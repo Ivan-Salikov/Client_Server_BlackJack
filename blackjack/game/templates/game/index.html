@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackJack 21</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Сетевая игра "21 очко"</h1>
+        <p id="output">Ожидание подключения...</p>
+        
+        <!-- Отображение карт игрока -->
+        <div>
+            <h2>Ваши карты:</h2>
+            <div id="playerCards"></div>
+            <div class="score" id="playerScore"></div>
+        </div>
+        
+        <!-- Отображение карт дилера -->
+        <div>
+            <h2>Карты дилера:</h2>
+            <div id="dealerCards"></div>
+            <div class="score" id="dealerScore"></div>
+        </div>
+
+        <!-- Кнопки для действий игрока -->
+        <div id="gameControls">
+            <button onclick="sendMessage('hit')">Взять карту</button>
+            <button onclick="sendMessage('stand')">Остановиться</button>
+        </div>
+
+        <!-- Поле для ввода сообщения (для отладки) -->
+        <input type="text" id="messageInput" placeholder="Введите сообщение" oninput="updateMessage()">
+        
+        <div id="gameResult" class="game-over" style="display: none;"></div>
+    </div>
+
+    <script>
+        const socket = new WebSocket("ws://127.0.0.1:10000/ws/game/");
+
+        socket.onmessage = function(event) {
+            const gameState = JSON.parse(event.data);
+            updateGameState(gameState);
+        };
+
+        function sendMessage(action) {
+            socket.send(JSON.stringify({ 'action': action }));
+        }
+
+        function updateGameState(gameState) {
+            // Обновляем карты игрока
+            const playerCardsDiv = document.getElementById("playerCards");
+            playerCardsDiv.innerHTML = gameState.player_cards.map(card => `<span class="card">${card}</span>`).join('');
+            document.getElementById("playerScore").textContent = "Очки: " + gameState.player_score;
+
+            // Обновляем карты дилера
+            const dealerCardsDiv = document.getElementById("dealerCards");
+            dealerCardsDiv.innerHTML = gameState.dealer_cards.map(card => `<span class="card">${card}</span>`).join('');
+            document.getElementById("dealerScore").textContent = "Очки: " + gameState.dealer_score;
+
+            // Статус игры
+            const output = document.getElementById("output");
+            output.textContent = gameState.game_over ? gameState.result : "Ожидание хода...";
+
+            // Выводим сообщение о завершении игры
+            const gameResultDiv = document.getElementById("gameResult");
+            if (gameState.game_over) {
+                gameResultDiv.style.display = 'block';
+                gameResultDiv.textContent = gameState.result;
+            }
+
+            // Делаем кнопки недоступными, если игра завершена
+            if (gameState.game_over) {
+                document.getElementById("gameControls").style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
