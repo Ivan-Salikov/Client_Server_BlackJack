@@ -130,11 +130,7 @@ USE_TZ = True
 
 # Путь к основным статикам проекта
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),  # Путь к глобальным статическим файлам проекта
-]
-
+STATICFILES_DIRS = [BASE_DIR / "game" / "static"]
 # Папка для сбора статики
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
