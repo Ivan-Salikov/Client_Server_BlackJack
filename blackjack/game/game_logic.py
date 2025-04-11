@@ -40,6 +40,15 @@ class BlackjackGame:
 
         return self.get_game_state()
 
+    
+    def restart_game(self):
+        """Перезапускает игру, сбрасывая состояние"""
+        self.deck = self.create_deck()  # Создаем новую колоду карт
+        self.start_game()  # Начинаем новую игру
+        self.game_over = False
+        self.player_moves = 0  # Сбрасываем счётчик ходов
+        return self.get_game_state()
+
     def calculate_score(self, cards):
         """Вычисляет сумму очков, учитывая тузы"""
         score = sum(card[1] for card in cards)

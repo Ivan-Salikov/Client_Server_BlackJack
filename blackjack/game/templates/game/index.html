@@ -10,6 +10,7 @@
     <header class="header">
         <img src="{% static 'images/Game_Logo.png' %}" alt="Логотип" class="game-logo">
         <h1 class="game-title">Полуночный Блэкджек</h1>
+        <button onclick="restartGame()">Новая игра</button>
     </header>
 
     <div class="container">
@@ -65,6 +66,17 @@
                 gameResultDiv.textContent = gameState.result;
                 document.getElementById("gameControls").style.display = 'none';
             }
+        }
+
+        function restartGame() {
+            socket.send(JSON.stringify({ 'action': 'restart' }));  // Отправляем сообщение серверу для перезапуска игры
+            document.getElementById("gameResult").style.display = 'none';  // Скрываем сообщение о конце игры
+            document.getElementById("gameControls").style.display = 'block'; // Показываем кнопки игры
+            document.getElementById("playerCards").innerHTML = ''; // Очищаем карты игрока
+            document.getElementById("dealerCards").innerHTML = ''; // Очищаем карты дилера
+            document.getElementById("playerScore").textContent = "Очки: 0"; // Сбрасываем очки игрока
+            document.getElementById("dealerScore").textContent = "Очки: 0"; // Сбрасываем очки дилера
+            document.getElementById("output").textContent = "Ожидание подключения..."; // Обновляем текст
         }
     </script>
 </body>

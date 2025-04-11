@@ -25,6 +25,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_state = self.game.player_hit()
         elif action == 'stand':
             game_state = self.game.stand()
+        elif action == 'restart':
+            game_state = self.game.restart_game() 
         else:
             game_state = self.game.get_game_state()
 
