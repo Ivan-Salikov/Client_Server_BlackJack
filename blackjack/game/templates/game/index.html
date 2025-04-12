@@ -5,6 +5,7 @@
     <title>Карточная игра "Полуночный Блэкджек"</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'images/Game_Logo.png' %}" type="image/png">
 </head>
 <body>
     <header class="header">
@@ -17,15 +18,15 @@
         <p id="output">Ожидание подключения...</p>
 
         <div>
-            <h2>Ваши карты:</h2>
-            <div id="playerCards"></div>
-            <div class="score" id="playerScore"></div>
+            <h2>Карты дилера:</h2>
+            <div id="dealerCards" class="card-container"></div>
+            <div class="score" id="dealerScore"></div>
         </div>
 
         <div>
-            <h2>Карты дилера:</h2>
-            <div id="dealerCards"></div>
-            <div class="score" id="dealerScore"></div>
+            <h2>Ваши карты:</h2>
+            <div id="playerCards" class="card-container"></div>
+            <div class="score" id="playerScore"></div>
         </div>
 
         <div id="gameControls">
@@ -69,14 +70,14 @@
         }
 
         function restartGame() {
-            socket.send(JSON.stringify({ 'action': 'restart' }));  // Отправляем сообщение серверу для перезапуска игры
-            document.getElementById("gameResult").style.display = 'none';  // Скрываем сообщение о конце игры
-            document.getElementById("gameControls").style.display = 'block'; // Показываем кнопки игры
-            document.getElementById("playerCards").innerHTML = ''; // Очищаем карты игрока
-            document.getElementById("dealerCards").innerHTML = ''; // Очищаем карты дилера
-            document.getElementById("playerScore").textContent = "Очки: 0"; // Сбрасываем очки игрока
-            document.getElementById("dealerScore").textContent = "Очки: 0"; // Сбрасываем очки дилера
-            document.getElementById("output").textContent = "Ожидание подключения..."; // Обновляем текст
+            socket.send(JSON.stringify({ 'action': 'restart' }));
+            document.getElementById("gameResult").style.display = 'none';
+            document.getElementById("gameControls").style.display = 'block';
+            document.getElementById("playerCards").innerHTML = '';
+            document.getElementById("dealerCards").innerHTML = '';
+            document.getElementById("playerScore").textContent = "Очки: 0";
+            document.getElementById("dealerScore").textContent = "Очки: 0";
+            document.getElementById("output").textContent = "Ожидание подключения...";
         }
     </script>
 </body>

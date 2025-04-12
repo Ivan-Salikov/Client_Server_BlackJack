@@ -3,7 +3,7 @@ body {
     padding: 0;
     font-family: 'Georgia', serif;
     background-color: #1e1e1e;
-    color: #f0e6d2;
+    color: #ffaa00;
     background-image: url("../images/table.png");
     background-size: cover;
     background-position: center;
@@ -59,18 +59,35 @@ h2 {
     color: #ffffff;
 }
 
+.card-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap; 
+    margin-top: 10px;
+}
+
 .card {
-    display: inline-block;
-    padding: 12px 16px;
+    width: 90px;
+    height: 126px;
     margin: 6px;
     background-color: #fffbe6;
-    color:#000;
+    color: #000;
     border: 2px solid #888;
     border-radius: 8px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    line-height: 1;
+    letter-spacing: -1px;
 }
+
 
 button {
     padding: 12px 24px;
