@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карточная игра "Полуночный Блэкджек"</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -51,11 +52,59 @@
 
         function updateGameState(gameState) {
             const playerCardsDiv = document.getElementById("playerCards");
-            playerCardsDiv.innerHTML = gameState.player_cards.map(card => `<span class="card">${card}</span>`).join('');
+
+            // Сохраняем состояние переворота карт и добавляем новые карты
+            gameState.player_cards.forEach((card, index) => {
+                const existingCard = document.getElementById(`playerCard${index}`);
+                if (!existingCard) {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card');
+                    cardElement.innerHTML = `
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="playerCard${index}">
+                                <div class="flip-card-front">${card}</div>
+                                <div class="flip-card-back"></div>
+                            </div>
+                        </div>
+                    `;
+                    playerCardsDiv.appendChild(cardElement);
+                    setTimeout(() => {
+                        const cardElement = document.getElementById(`playerCard${index}`);
+                        if (!cardElement.classList.contains('flip')) {
+                            cardElement.classList.add('flip');
+                        }
+                    }, 1000); // Задержка для переворота карты
+                }
+            });
+
             document.getElementById("playerScore").textContent = "Очки: " + gameState.player_score;
 
+            // Обновляем карты дилера
             const dealerCardsDiv = document.getElementById("dealerCards");
-            dealerCardsDiv.innerHTML = gameState.dealer_cards.map(card => `<span class="card">${card}</span>`).join('');
+
+            gameState.dealer_cards.forEach((card, index) => {
+                const existingCard = document.getElementById(`dealerCard${index}`);
+                if (!existingCard) {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card');
+                    cardElement.innerHTML = `
+                        <div class="flip-card">
+                            <div class="flip-card-inner" id="dealerCard${index}">
+                                <div class="flip-card-front">${card}</div>
+                                <div class="flip-card-back"></div>
+                            </div>
+                        </div>
+                    `;
+                    dealerCardsDiv.appendChild(cardElement);
+                    setTimeout(() => {
+                        const cardElement = document.getElementById(`dealerCard${index}`);
+                        if (!cardElement.classList.contains('flip')) {
+                            cardElement.classList.add('flip');
+                        }
+                    }, 1000); // Задержка для переворота карты
+                }
+            });
+
             document.getElementById("dealerScore").textContent = "Очки: " + gameState.dealer_score;
 
             const output = document.getElementById("output");
