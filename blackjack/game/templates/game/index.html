@@ -10,9 +10,16 @@
 </head>
 <body>
     <header class="header">
-        <img src="{% static 'images/Game_Logo.png' %}" alt="Логотип" class="game-logo">
-        <h1 class="game-title">Полуночный Блэкджек</h1>
-        <button onclick="restartGame()">Новая игра</button>
+        <div class="header-left">
+            <img src="{% static 'images/Game_Logo.png' %}" alt="Логотип" class="game-logo">
+            <h1 class="game-title">Полуночный Блэкджек</h1>
+        </div>
+
+        <div class="header-buttons">
+            <button onclick="openAbout()">Об игре</button>
+            <button onclick="openRules()">Правила</button>
+            <button onclick="restartGame()">Новая игра</button>
+        </div>
     </header>
 
     <div class="container">
@@ -38,6 +45,33 @@
         <div id="gameResult" class="game-over" style="display: none;"></div>
     </div>
 
+    <!-- Модальное окно "О игре" -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAbout()">&times;</span>
+            <h2>Сетевая игра "Полуночный Блэкджек"</h2>
+            <p><strong>Описание:</strong> Сетевая карточная игра по мотивам классического блэкджека. Игра реализована с использованием Django, WebSockets и кастомной визуальной тематики.</p>
+            <p><strong>Версия:</strong> 1.0.0 от 16.04.2025г.</p>
+            <p><strong>Разработчик:</strong> Саликов Иван Анатольевич</p>
+        </div>
+    </div>
+
+    <!-- Модальное окно с правилами -->
+    <div id="rulesModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeRules()">&times;</span>
+            <h2>Правила игры</h2>
+            <p>
+                Цель игры — набрать как можно ближе к 21 очку, не превышая его.<br><br>
+                - Валет, дама и король стоят по 10 очков.<br>
+                - Туз может быть 1 или 11 очков, в зависимости от ситуации.<br>
+                - Игрок ходит первым: может взять ещё карту ("Взять карту") или остановиться ("Остановиться").<br>
+                - После этого дилер берёт карты, пока не наберёт 17 или больше очков.<br><br>
+                Побеждает тот, кто ближе к 21. Если кто-то перебрал — он проигрывает.
+            </p>
+        </div>
+    </div>
+
     <script>
         const socket = new WebSocket("ws://127.0.0.1:10000/ws/game/");
 
@@ -52,11 +86,11 @@
 
         function updateGameState(gameState) {
             const playerCardsDiv = document.getElementById("playerCards");
+            const dealerCardsDiv = document.getElementById("dealerCards");
 
-            // Сохраняем состояние переворота карт и добавляем новые карты
+            // Обновление карт игрока
             gameState.player_cards.forEach((card, index) => {
-                const existingCard = document.getElementById(`playerCard${index}`);
-                if (!existingCard) {
+                if (!document.getElementById(`playerCard${index}`)) {
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.innerHTML = `
@@ -69,22 +103,14 @@
                     `;
                     playerCardsDiv.appendChild(cardElement);
                     setTimeout(() => {
-                        const cardElement = document.getElementById(`playerCard${index}`);
-                        if (!cardElement.classList.contains('flip')) {
-                            cardElement.classList.add('flip');
-                        }
-                    }, 1000); // Задержка для переворота карты
+                        document.getElementById(`playerCard${index}`).classList.add('flip');
+                    }, 1000);
                 }
             });
 
-            document.getElementById("playerScore").textContent = "Очки: " + gameState.player_score;
-
-            // Обновляем карты дилера
-            const dealerCardsDiv = document.getElementById("dealerCards");
-
+            // Обновление карт дилера
             gameState.dealer_cards.forEach((card, index) => {
-                const existingCard = document.getElementById(`dealerCard${index}`);
-                if (!existingCard) {
+                if (!document.getElementById(`dealerCard${index}`)) {
                     const cardElement = document.createElement('div');
                     cardElement.classList.add('card');
                     cardElement.innerHTML = `
@@ -97,24 +123,39 @@
                     `;
                     dealerCardsDiv.appendChild(cardElement);
                     setTimeout(() => {
-                        const cardElement = document.getElementById(`dealerCard${index}`);
-                        if (!cardElement.classList.contains('flip')) {
-                            cardElement.classList.add('flip');
-                        }
-                    }, 1000); // Задержка для переворота карты
+                        document.getElementById(`dealerCard${index}`).classList.add('flip');
+                    }, 1000);
                 }
             });
 
+            document.getElementById("playerScore").textContent = "Очки: " + gameState.player_score;
             document.getElementById("dealerScore").textContent = "Очки: " + gameState.dealer_score;
 
             const output = document.getElementById("output");
-            output.textContent = gameState.game_over ? gameState.result : "Ожидание хода...";
-
             const gameResultDiv = document.getElementById("gameResult");
+
             if (gameState.game_over) {
+                output.textContent = gameState.result;
                 gameResultDiv.style.display = 'block';
                 gameResultDiv.textContent = gameState.result;
+
+                // Сброс к базовому стилю
+                gameResultDiv.className = "game-over";
+
+                // Цветовая подсветка
+                const result = gameState.result.toLowerCase();
+                if (result.includes("победа") || result.includes("вы выиграли")) {
+                    gameResultDiv.classList.add("result-win");
+                } else if (result.includes("ничья") || result.includes("равно")) {
+                    gameResultDiv.classList.add("result-draw");
+                } else {
+                    gameResultDiv.classList.add("result-lose");
+                }
+
                 document.getElementById("gameControls").style.display = 'none';
+            } else {
+                output.textContent = "Ожидание хода...";
+                gameResultDiv.style.display = 'none';
             }
         }
 
@@ -127,6 +168,22 @@
             document.getElementById("playerScore").textContent = "Очки: 0";
             document.getElementById("dealerScore").textContent = "Очки: 0";
             document.getElementById("output").textContent = "Ожидание подключения...";
+        }
+
+        function openAbout() {
+            document.getElementById("aboutModal").style.display = "flex";
+        }
+
+        function closeAbout() {
+            document.getElementById("aboutModal").style.display = "none";
+        }
+
+        function openRules() {
+            document.getElementById("rulesModal").style.display = "flex";
+        }
+
+        function closeRules() {
+            document.getElementById("rulesModal").style.display = "none";
         }
     </script>
 </body>
