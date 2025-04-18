@@ -1,0 +1,14 @@
+Требования:
+python: не ниже версии 3.12.5
+
+Для запуска нужно распаковать архив, затем через консоль зайти в папку проекта
+Командой python -m venv .venv создаем виртуальную среду для проекта
+Запускаем её командой .venv\Scripts\activate
+Затем с помощью команды pip install requirements.txt устанавливаем все необходимые библиотеки
+Для запуска программы через консоль заходим в папку blackjack и прописываем команду py manage.py runserver
+После открываем появившуюся ссылку
+System check identified no issues (0 silenced).
+April 18, 2025 - 11:48:43
+Django version 5.1.7, using settings 'blackjack.settings'
+Starting ASGI/Daphne version 4.0.0 development server at http://127.0.0.1:8000/ (ссылка на проект)
+Quit the server with CTRL-BREAK.
