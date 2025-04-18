@@ -1,10 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карточная игра "Полуночный Блэкджек"</title>
-    {% load static %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'images/Game_Logo.png' %}" type="image/png">
 </head>
@@ -53,6 +53,7 @@
             <p><strong>Описание:</strong> Сетевая карточная игра по мотивам классического блэкджека. Игра реализована с использованием Django, WebSockets и кастомной визуальной тематики.</p>
             <p><strong>Версия:</strong> 1.0.0 от 16.04.2025г.</p>
             <p><strong>Разработчик:</strong> Саликов Иван Анатольевич</p>
+            <p>© Все права защищены.</p>
         </div>
     </div>
 
@@ -73,7 +74,9 @@
     </div>
 
     <script>
-        const socket = new WebSocket("ws://127.0.0.1:10000/ws/game/");
+        const loc = window.location;
+        const wsStart = loc.protocol === "https:" ? "wss://" : "ws://";
+        const socket = new WebSocket(wsStart + loc.host + "/ws/game/");
 
         socket.onmessage = function(event) {
             const gameState = JSON.parse(event.data);
